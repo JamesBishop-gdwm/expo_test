@@ -55,10 +55,7 @@ export default function ParallaxScrollView({
       >
         <View style={styles.headerContent}>
           {showBackButton && (
-            <TouchableOpacity
-              onPress={onBackPress}
-              style={styles.backButton}
-            >
+            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           )}
@@ -82,9 +79,7 @@ export default function ParallaxScrollView({
           ...styles.contentContainer,
         }}
       >
-        <ThemedView style={styles.content}>
-          {children}
-        </ThemedView>
+        <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
