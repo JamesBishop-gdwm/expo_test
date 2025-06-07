@@ -1,0 +1,141 @@
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { useOperatorStore } from "@/store/useOperatorStore";
+import { Picker } from "@react-native-picker/picker";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { StyleSheet } from "react-native";
+
+export default function TaskScanningScreen() {
+  const router = useRouter();
+  const store = useOperatorStore();
+
+  // Load operators and tasks when the screen loads
+  useEffect(() => {
+    const initScreen = async () => {
+      // First load any saved user data
+      await store.loadUserLocalUser();
+
+      // Then load all users and tasks
+      await store.loadUsersAndTasks();
+
+      // Auto-navigate if a user is already set with a task
+      if (store.currentUser?.id && store.currentUser?.task) {
+        router.push(`/tasks/${store.currentUser.id}`);
+      }
+    };
+
+    initScreen();
+  }, []);
+
+  // Event handlers
+  const handleUserChange = (userId: string) => {
+    store.selectUserById(userId);
+  };
+
+  const handleTaskChange = (taskName: string) => {
+    store.selectTask(taskName);
+  };
+
+  const handleSetMode = async () => {
+    await store.setUser();
+    router.push(`/tasks/${store.currentUser.id}`);
+  };
+
+  return (
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+    >
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">Task Scanning</ThemedText>
+      </ThemedView>
+      <Card>
+        <ThemedView style={styles.formContainer}>
+          <ThemedText type="defaultSemiBold" style={styles.label}>
+            Operator
+          </ThemedText>
+          <ThemedView style={styles.pickerContainer}>
+            <Picker
+              selectedValue={store.currentUser.id}
+              onValueChange={handleUserChange}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Operator" value="" />
+              {store.getOperatorsAsOptions().map((option) => (
+                <Picker.Item
+                  key={option.value.toString()}
+                  label={option.text}
+                  value={option.value.toString()}
+                />
+              ))}
+            </Picker>
+          </ThemedView>
+
+          <ThemedText
+            type="defaultSemiBold"
+            style={[styles.label, styles.topSpacing]}
+          >
+            Tasks
+          </ThemedText>
+          <ThemedView style={styles.pickerContainer}>
+            <Picker
+              selectedValue={store.currentUser.task || ""}
+              onValueChange={handleTaskChange}
+              style={styles.picker}
+              enabled={!!store.currentUser.id}
+            >
+              <Picker.Item label="Select Task" value="" />
+              {store.getCurrentUserTasks().map((task) => (
+                <Picker.Item
+                  key={task.taskKey}
+                  label={task.text}
+                  value={task.text}
+                />
+              ))}
+            </Picker>
+          </ThemedView>
+
+          <ThemedView style={styles.buttonContainer}>
+            <Button onPress={handleSetMode}>Set mode</Button>
+          </ThemedView>
+        </ThemedView>
+      </Card>
+    </ParallaxScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 16,
+  },
+  card: {
+    padding: 16,
+  },
+  formContainer: {
+    gap: 8,
+  },
+  label: {
+    fontSize: 16,
+  },
+  topSpacing: {
+    marginTop: 16,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#6b7280",
+    borderRadius: 8,
+    marginTop: 4,
+  },
+  picker: {
+    height: 50,
+  },
+  buttonContainer: {
+    marginTop: 24,
+  },
+});

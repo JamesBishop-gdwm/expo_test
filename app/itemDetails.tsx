@@ -103,9 +103,9 @@ export default function ItemDetailsScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <ParallaxScrollView
-          headerBackgroundColor={{ light: "#B1DAE5", dark: "#2D4D57" }}
-          showBackButton
-          onBackPress={() => router.back()}
+          headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+          showBackButton={true}
+          backRoute="/(tabs)/itemHistory"
         >
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#0000ff" />
@@ -122,9 +122,9 @@ export default function ItemDetailsScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <ParallaxScrollView
-          headerBackgroundColor={{ light: "#B1DAE5", dark: "#2D4D57" }}
-          showBackButton
-          onBackPress={() => router.back()}
+          headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+          showBackButton={true}
+          backRoute="/(tabs)/itemHistory"
         >
           <ThemedView style={styles.errorContainer}>
             <ThemedText type="title">Error</ThemedText>
@@ -150,9 +150,9 @@ export default function ItemDetailsScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <ParallaxScrollView
-        headerBackgroundColor={{ light: "#B1DAE5", dark: "#2D4D57" }}
-        showBackButton
-        onBackPress={() => router.back()}
+        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+        showBackButton={true}
+        backRoute="/(tabs)/itemHistory"
       >
         <ThemedView style={styles.container}>
           <ThemedText type="title">Item {itemNumber}</ThemedText>

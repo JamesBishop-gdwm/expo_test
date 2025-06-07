@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router"; // Import router directly
 import type { PropsWithChildren } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -14,16 +15,26 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 const HEADER_HEIGHT = 60;
 
+// Application colors
+const COLORS = {
+  primary: "#781f19", // Dark red
+  secondary: "#224f4a", // Dark teal
+  secondaryHover: "#255c56",
+  offWhite: "#f6f6f6",
+};
+
 type Props = PropsWithChildren<{
   headerBackgroundColor: { dark: string; light: string };
   showBackButton?: boolean;
-  onBackPress?: () => void;
+  backRoute?: any; // For simple route string navigation
+  onBackPress?: () => void; // For custom navigation handlers
 }>;
 
 export default function ParallaxScrollView({
   children,
   headerBackgroundColor,
   showBackButton = false,
+  backRoute,
   onBackPress,
 }: Props) {
   const colorScheme = useColorScheme() ?? "light";
@@ -44,6 +55,38 @@ export default function ParallaxScrollView({
     };
   });
 
+  // Handle back navigation with explicit route or callback
+  const handleBackNavigation = () => {
+    // If a custom callback is provided, use it
+    if (onBackPress) {
+      onBackPress();
+      return;
+    }
+
+    // Otherwise fall back to route-based navigation
+    if (backRoute) {
+      try {
+        // Try different navigation approaches depending on route type
+        router.push(backRoute as any);
+      } catch (e) {
+        console.warn("Navigation failed:", e);
+        // Fallback to replace if push fails
+        try {
+          router.replace(backRoute as any);
+        } catch (e) {
+          console.warn("All navigation attempts failed");
+        }
+      }
+    } else {
+      // If no back route specified, try normal back navigation
+      try {
+        router.back();
+      } catch (e) {
+        console.warn("No back route specified and back() failed");
+      }
+    }
+  };
+
   return (
     <ThemedView style={styles.container}>
       <Animated.View
@@ -55,8 +98,12 @@ export default function ParallaxScrollView({
       >
         <View style={styles.headerContent}>
           {showBackButton && (
-            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="white" />
+            <TouchableOpacity
+              onPress={handleBackNavigation}
+              style={styles.backButton}
+              hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            >
+              <Ionicons name="arrow-back" size={24} color={COLORS.offWhite} />
             </TouchableOpacity>
           )}
 
@@ -116,10 +163,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   greenText: {
-    color: "#16a34a", // text-green-600 equivalent
+    color: COLORS.secondary, // Updated to use secondary color
   },
   redText: {
-    color: "#dc2626", // text-red-600 equivalent
+    color: COLORS.primary, // Updated to use primary color
   },
   scrollView: {
     flex: 1,
