@@ -63,10 +63,14 @@ export default function TaskScanningScreen() {
               onValueChange={handleUserChange}
               style={styles.picker}
             >
-              <Picker.Item label="Select Operator" value="" />
-              {store.getOperatorsAsOptions().map((option) => (
+              <Picker.Item
+                key="select-operator"
+                label="Select Operator"
+                value=""
+              />
+              {store.getOperatorsAsOptions().map((option, index) => (
                 <Picker.Item
-                  key={option.value.toString()}
+                  key={`operator-${option.value.toString()}-${index}`}
                   label={option.text}
                   value={option.value.toString()}
                 />
@@ -87,10 +91,10 @@ export default function TaskScanningScreen() {
               style={styles.picker}
               enabled={!!store.currentUser.id}
             >
-              <Picker.Item label="Select Task" value="" />
-              {store.getCurrentUserTasks().map((task) => (
+              <Picker.Item key="select-task" label="Select Task" value="" />
+              {store.getCurrentUserTasks().map((task, index) => (
                 <Picker.Item
-                  key={task.taskKey}
+                  key={task.taskKey ? `task-${task.taskKey}` : `task-${index}`}
                   label={task.text}
                   value={task.text}
                 />
@@ -99,7 +103,23 @@ export default function TaskScanningScreen() {
           </ThemedView>
 
           <ThemedView style={styles.buttonContainer}>
-            <Button onPress={handleSetMode}>Set mode</Button>
+            <Button
+              onPress={handleSetMode}
+              disabled={!store.currentUser.id || !store.currentUser.task}
+              style={[
+                styles.setModeButton,
+                {
+                  opacity:
+                    !store.currentUser.id || !store.currentUser.task ? 0.7 : 1,
+                },
+              ]}
+            >
+              {!store.currentUser.id
+                ? "Select an operator first"
+                : !store.currentUser.task
+                ? "Select a task first"
+                : "Set mode"}
+            </Button>
           </ThemedView>
         </ThemedView>
       </Card>
@@ -137,5 +157,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 24,
+  },
+  setModeButton: {
+    // Remove reference to store here
   },
 });

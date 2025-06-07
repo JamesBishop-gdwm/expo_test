@@ -1,6 +1,8 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { useOperatorStore } from "@/store/useOperatorStore";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
@@ -15,7 +17,6 @@ export default function TaskScreen() {
   const handleBackPress = async () => {
     // Log out the user first
     await store.logOut();
-
     // Then navigate back to the task scanning screen
     router.replace("/(tabs)/taskScanning");
   };
@@ -24,6 +25,20 @@ export default function TaskScreen() {
     // Load user data if needed
     store.loadUserLocalUser();
   }, []);
+
+  // Navigation handlers
+  const handleScanBarcode = () => {
+    router.push(`/tasks/${id}/scan-barcode`);
+  };
+
+  const handleScanHistory = () => {
+    router.push(`/tasks/${id}/scan-history`);
+  };
+
+  const handleLogout = async () => {
+    await store.logOut();
+    router.replace("/(tabs)/taskScanning");
+  };
 
   return (
     <>
@@ -34,21 +49,31 @@ export default function TaskScreen() {
         onBackPress={handleBackPress}
       >
         <ThemedView style={styles.container}>
-          <ThemedText type="title">Task Scanning</ThemedText>
+          <Card style={styles.card}>
+            {store.currentUser && (
+              <ThemedText type="title" style={styles.cardTitle}>
+                {store.currentUser.name} | {store.currentUser.task}
+              </ThemedText>
+            )}
 
-          <ThemedText type="subtitle" style={styles.title}>
-            Task: {store.currentUser.task}
-          </ThemedText>
-          <ThemedText style={styles.subtitle}>
-            Operator: {store.currentUser.name}
-          </ThemedText>
+            <ThemedView style={styles.buttonContainer}>
+              <Button onPress={handleScanBarcode} style={styles.button}>
+                Scan Door
+              </Button>
 
-          {/* Add your barcode scanning UI here */}
-          <ThemedView style={styles.scanningSection}>
-            <ThemedText>
-              Barcode scanning functionality will be implemented here.
-            </ThemedText>
-          </ThemedView>
+              <Button onPress={handleScanHistory} style={styles.button}>
+                Scan History
+              </Button>
+
+              <Button
+                onPress={handleLogout}
+                style={[styles.button, styles.logoutButton]}
+                variant="outline"
+              >
+                Change User
+              </Button>
+            </ThemedView>
+          </Card>
         </ThemedView>
       </ParallaxScrollView>
     </>
@@ -58,23 +83,28 @@ export default function TaskScreen() {
 const styles = StyleSheet.create({
   container: {
     gap: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   card: {
     padding: 16,
   },
-  title: {
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#4b5563",
+  cardTitle: {
+    fontSize: 24,
+    fontWeight: "700",
     marginBottom: 24,
+    textAlign: "center",
   },
-  scanningSection: {
-    marginTop: 16,
-    padding: 16,
-    backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 8,
+  buttonContainer: {
+    gap: 16,
+  },
+  button: {
+    width: "100%",
+    height: 50,
+    justifyContent: "center",
     alignItems: "center",
+  },
+  logoutButton: {
+    marginTop: 16,
   },
 });

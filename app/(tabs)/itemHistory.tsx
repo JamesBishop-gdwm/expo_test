@@ -7,6 +7,7 @@ import NfcManager, { Ndef, NfcTech } from "react-native-nfc-manager";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Card } from "@/components/ui/Card";
 
 export default function TabTwoScreen() {
   const [nfcContent, setNfcContent] = useState<string | null>(null);
@@ -92,7 +93,7 @@ export default function TabTwoScreen() {
     });
   };
 
-  // Initialize NFC Manager, check support & auto-start scanning
+  // Initialize NFC Manager and check support - but don't auto-start scanning
   useEffect(() => {
     async function init() {
       if (Platform.OS === "web") {
@@ -105,8 +106,7 @@ export default function TabTwoScreen() {
         setIsSupported(supported);
         if (supported) {
           await NfcManager.start();
-          // Auto-start scanning once NFC is initialized
-          setTimeout(() => readNfcTag(), 500);
+          // Removed auto-start scanning
         } else {
           setNfcError("NFC is not supported on this device.");
         }
@@ -122,7 +122,7 @@ export default function TabTwoScreen() {
       NfcManager.cancelTechnologyRequest().catch(() => {});
       console.log("NFC cleanup complete");
     };
-  }, [readNfcTag]);
+  }, []);
 
   // Stop an ongoing scan
   const stopNfcScan = useCallback(async () => {
@@ -141,81 +141,89 @@ export default function TabTwoScreen() {
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">NFC Scanner</ThemedText>
+        <ThemedText type="title">Item History</ThemedText>
       </ThemedView>
 
       {/* Manual entry section */}
-      <ThemedView style={styles.manualEntryContainer}>
-        <ThemedText type="defaultSemiBold" style={styles.manualEntryLabel}>
-          Manual Entry
-        </ThemedText>
-        <View style={styles.inputRow}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter item number (e.g. DB-002801-1)"
-            value={manualItemNumber}
-            onChangeText={setManualItemNumber}
-            placeholderTextColor="#888"
-          />
-          <Button title="Go" onPress={handleManualSubmit} />
-        </View>
-      </ThemedView>
-
-      <ThemedText style={[styles.statusText, styles.scannerHeader]}>
-        NFC Scanner
-      </ThemedText>
-
-      <ThemedText style={styles.statusText}>
-        NFC Support:{" "}
-        <ThemedText type="defaultSemiBold">
-          {isSupported === true
-            ? "Supported"
-            : isSupported === false
-            ? "Not Supported"
-            : "Checking..."}
-        </ThemedText>
-      </ThemedText>
-
-      {isScanning ? (
-        <>
-          <ThemedText style={styles.statusText}>
-            Hold your device near an NFC tag...
+      <Card>
+        <ThemedView style={styles.manualEntryContainer}>
+          <ThemedText type="defaultSemiBold" style={styles.manualEntryLabel}>
+            Manual Entry
           </ThemedText>
-          <Button title="Stop Scanning" onPress={stopNfcScan} />
-        </>
-      ) : (
-        <>
-          {nfcError && (
-            <ThemedText type="defaultSemiBold" style={styles.errorText}>
-              Error: {nfcError}
-            </ThemedText>
-          )}
-
-          {isSupported && (
-            <>
-              <ThemedText style={styles.inactiveText}>
-                Scanning inactive
-              </ThemedText>
-              <Button title="Start Scanning" onPress={readNfcTag} />
-            </>
-          )}
-        </>
-      )}
-
-      {nfcContent && (
-        <ThemedView style={styles.contentContainer}>
-          <ThemedText type="defaultSemiBold">Scanned Content:</ThemedText>
-          <ThemedText style={styles.scannedContentText}>
-            {nfcContent}
-          </ThemedText>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter item number (e.g. DB-002801-1)"
+              value={manualItemNumber}
+              onChangeText={setManualItemNumber}
+              placeholderTextColor="#888"
+            />
+            <Button title="Go" onPress={handleManualSubmit} />
+          </View>
         </ThemedView>
-      )}
+      </Card>
 
-      {!isSupported && Platform.OS !== "web" && !nfcError && (
-        <ThemedText style={styles.instructionText}>
-          Please ensure NFC is enabled in your device settings.
+      <Card style={styles.nfcCard}>
+        <ThemedText style={[styles.statusText, styles.scannerHeader]}>
+          NFC Scanner
         </ThemedText>
-      )}
+
+        <ThemedText style={styles.statusText}>
+          NFC Support:{" "}
+          <ThemedText type="defaultSemiBold">
+            {isSupported === true
+              ? "Supported"
+              : isSupported === false
+              ? "Not Supported"
+              : "Checking..."}
+          </ThemedText>
+        </ThemedText>
+
+        {isScanning ? (
+          <>
+            <ThemedText style={styles.scanningText}>
+              Hold your device near an NFC tag...
+            </ThemedText>
+            <Button title="Cancel" onPress={stopNfcScan} color="#FF6B00" />
+          </>
+        ) : (
+          <>
+            {nfcError && (
+              <ThemedText type="defaultSemiBold" style={styles.errorText}>
+                Error: {nfcError}
+              </ThemedText>
+            )}
+
+            {isSupported && (
+              <>
+                <ThemedText style={styles.inactiveText}>
+                  Tap the button below to scan an NFC tag
+                </ThemedText>
+                <Button
+                  title="Start NFC Scan"
+                  onPress={readNfcTag}
+                  color="#224f4a"
+                />
+              </>
+            )}
+          </>
+        )}
+
+        {nfcContent && (
+          <ThemedView style={styles.contentContainer}>
+            <ThemedText type="defaultSemiBold">Scanned Content:</ThemedText>
+            <ThemedText style={styles.scannedContentText}>
+              {nfcContent}
+            </ThemedText>
+          </ThemedView>
+        )}
+
+        {!isSupported && Platform.OS !== "web" && !nfcError && (
+          <ThemedText style={styles.instructionText}>
+            Please ensure NFC is enabled in your device settings.
+          </ThemedText>
+        )}
+      </Card>
     </ParallaxScrollView>
   );
 }
@@ -232,17 +240,25 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 16,
   },
+  nfcCard: {
+    marginTop: 16,
+  },
   statusText: {
     marginBottom: 8,
   },
+  scanningText: {
+    marginVertical: 16,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#224f4a",
+  },
   errorText: {
-    color: "red",
+    color: "#781f19",
     marginBottom: 16,
   },
   inactiveText: {
-    color: "#FF6B00",
+    marginVertical: 16,
     fontWeight: "500",
-    marginBottom: 8,
   },
   contentContainer: {
     marginTop: 20,
@@ -261,10 +277,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   manualEntryContainer: {
-    backgroundColor: "rgba(0,0,0,0.03)",
     padding: 16,
-    borderRadius: 8,
-    marginBottom: 20,
   },
   manualEntryLabel: {
     marginBottom: 8,
