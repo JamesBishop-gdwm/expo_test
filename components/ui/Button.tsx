@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react'
 import {
   ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
-} from "react-native";
+} from 'react-native'
 
-import { COLORS } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { COLORS } from '@/constants/Colors'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 interface ButtonProps extends TouchableOpacityProps {
-  outline?: boolean;
-  loading?: boolean;
+  outline?: boolean
+  loading?: boolean
 }
 
 export function Button({
@@ -23,11 +23,11 @@ export function Button({
   disabled = false,
   ...props
 }: ButtonProps) {
-  const colorScheme = useColorScheme() ?? "light";
-  const isDark = colorScheme === "dark";
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDark = colorScheme === 'dark'
 
   // Theme-based colors
-  const backgroundColor = isDark ? COLORS.secondary : COLORS.primary;
+  const backgroundColor = isDark ? COLORS.secondary : COLORS.primary
 
   return (
     <TouchableOpacity
@@ -35,7 +35,7 @@ export function Button({
         styles.button,
         outline
           ? {
-              backgroundColor: "transparent",
+              backgroundColor: 'transparent',
               borderWidth: 1,
               borderColor: backgroundColor,
             }
@@ -64,7 +64,7 @@ export function Button({
         </Text>
       )}
     </TouchableOpacity>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -72,13 +72,13 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   text: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   disabled: {
     opacity: 0.6,
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
   disabledText: {
     opacity: 0.8,
   },
-});
+})

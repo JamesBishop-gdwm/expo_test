@@ -1,29 +1,29 @@
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import type { PropsWithChildren } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
+import type { PropsWithChildren } from 'react'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
-} from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
-import { COLORS, Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
+import { useBottomTabOverflow } from '@/components/ui/TabBarBackground'
+import { COLORS, Colors } from '@/constants/Colors'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
-const HEADER_HEIGHT = 60;
+const HEADER_HEIGHT = 60
 
 type Props = PropsWithChildren<{
-  headerBackgroundColor?: { dark: string; light: string };
-  showBackButton?: boolean;
-  backRoute?: any;
-  onBackPress?: () => void;
-}>;
+  headerBackgroundColor?: { dark: string; light: string }
+  showBackButton?: boolean
+  backRoute?: any
+  onBackPress?: () => void
+}>
 
 export default function ParallaxScrollView({
   children,
@@ -35,11 +35,11 @@ export default function ParallaxScrollView({
   backRoute,
   onBackPress,
 }: Props) {
-  const colorScheme = useColorScheme() ?? "light";
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollOffset = useScrollViewOffset(scrollRef);
-  const bottom = useBottomTabOverflow();
-  const { top: topInset } = useSafeAreaInsets();
+  const colorScheme = useColorScheme() ?? 'light'
+  const scrollRef = useAnimatedRef<Animated.ScrollView>()
+  const scrollOffset = useScrollViewOffset(scrollRef)
+  const bottom = useBottomTabOverflow()
+  const { top: topInset } = useSafeAreaInsets()
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -51,40 +51,35 @@ export default function ParallaxScrollView({
           ),
         },
       ],
-    };
-  });
+    }
+  })
 
   // Handle back navigation with explicit route or callback
   const handleBackNavigation = () => {
     // If a custom callback is provided, use it
     if (onBackPress) {
-      onBackPress();
-      return;
+      onBackPress()
+      return
     }
 
     // Otherwise fall back to route-based navigation
     if (backRoute) {
       try {
         // Try different navigation approaches depending on route type
-        router.push(backRoute as any);
+        router.push(backRoute as any)
       } catch (e) {
-        console.warn("Navigation failed:", e);
         // Fallback to replace if push fails
         try {
-          router.replace(backRoute as any);
-        } catch (e) {
-          console.warn("All navigation attempts failed");
-        }
+          router.replace(backRoute as any)
+        } catch (e) {}
       }
     } else {
       // If no back route specified, try normal back navigation
       try {
-        router.back();
-      } catch (e) {
-        console.warn("No back route specified and back() failed");
-      }
+        router.back()
+      } catch (e) {}
     }
-  };
+  }
 
   return (
     <ThemedView style={styles.container}>
@@ -94,7 +89,7 @@ export default function ParallaxScrollView({
           styles.statusBar,
           {
             height: topInset,
-            backgroundColor: colorScheme === "dark" ? "#000" : "#224f4a",
+            backgroundColor: colorScheme === 'dark' ? '#000' : '#224f4a',
           },
         ]}
       />
@@ -126,7 +121,7 @@ export default function ParallaxScrollView({
               lightColor={COLORS.offWhite}
               darkColor={COLORS.gold}
             >
-              GDWM{" "}
+              GDWM{' '}
               <ThemedText lightColor={COLORS.offWhite} darkColor={COLORS.gold}>
                 scanning
               </ThemedText>
@@ -149,7 +144,7 @@ export default function ParallaxScrollView({
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -157,7 +152,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusBar: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -165,27 +160,27 @@ const styles = StyleSheet.create({
   },
   header: {
     height: HEADER_HEIGHT,
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 0,
   },
   headerContent: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     padding: 4,
   },
   headerText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 18,
   },
   scrollView: {
@@ -198,6 +193,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 32,
     gap: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
-});
+})
