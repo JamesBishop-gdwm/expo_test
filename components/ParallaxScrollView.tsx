@@ -1,38 +1,36 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router"; // Import router directly
+import { router } from "expo-router";
 import type { PropsWithChildren } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
+import { COLORS, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 const HEADER_HEIGHT = 60;
 
-// Application colors
-const COLORS = {
-  primary: "#781f19", // Dark red
-  secondary: "#224f4a", // Dark teal
-  secondaryHover: "#255c56",
-  offWhite: "#f6f6f6",
-};
-
 type Props = PropsWithChildren<{
-  headerBackgroundColor: { dark: string; light: string };
+  headerBackgroundColor?: { dark: string; light: string };
   showBackButton?: boolean;
-  backRoute?: any; // For simple route string navigation
-  onBackPress?: () => void; // For custom navigation handlers
+  backRoute?: any;
+  onBackPress?: () => void;
 }>;
 
 export default function ParallaxScrollView({
   children,
-  headerBackgroundColor,
+  headerBackgroundColor = {
+    light: Colors.light.header,
+    dark: Colors.dark.header,
+  },
   showBackButton = false,
   backRoute,
   onBackPress,
@@ -41,6 +39,7 @@ export default function ParallaxScrollView({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
+  const { top: topInset } = useSafeAreaInsets();
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -89,10 +88,24 @@ export default function ParallaxScrollView({
 
   return (
     <ThemedView style={styles.container}>
+      {/* Status bar area */}
+      <View
+        style={[
+          styles.statusBar,
+          {
+            height: topInset,
+            backgroundColor: colorScheme === "dark" ? "#000" : "#224f4a",
+          },
+        ]}
+      />
+
       <Animated.View
         style={[
           styles.header,
-          { backgroundColor: headerBackgroundColor[colorScheme] },
+          {
+            backgroundColor: headerBackgroundColor[colorScheme],
+            top: topInset, // Position header below the status bar
+          },
           headerAnimatedStyle,
         ]}
       >
@@ -107,11 +120,18 @@ export default function ParallaxScrollView({
             </TouchableOpacity>
           )}
 
-          <Text style={styles.headerText}>
-            <Text style={styles.greenText}>GDWM</Text>
-            <Text> </Text>
-            <Text style={styles.redText}>scanning</Text>
-          </Text>
+          <View style={styles.headerContent}>
+            <ThemedText
+              style={styles.headerText}
+              lightColor={COLORS.offWhite}
+              darkColor={COLORS.gold}
+            >
+              GDWM{" "}
+              <ThemedText lightColor={COLORS.offWhite} darkColor={COLORS.gold}>
+                scanning
+              </ThemedText>
+            </ThemedText>
+          </View>
         </View>
       </Animated.View>
 
@@ -122,7 +142,7 @@ export default function ParallaxScrollView({
         style={styles.scrollView}
         contentContainerStyle={{
           paddingBottom: bottom,
-          paddingTop: HEADER_HEIGHT,
+          paddingTop: HEADER_HEIGHT + topInset, // Add topInset to padding
           ...styles.contentContainer,
         }}
       >
@@ -136,16 +156,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  statusBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 20,
+  },
   header: {
     height: HEADER_HEIGHT,
     position: "absolute",
-    top: 0,
     left: 0,
     right: 0,
     zIndex: 10,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
   headerContent: {
     flex: 1,
@@ -161,12 +187,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontWeight: "bold",
     fontSize: 18,
-  },
-  greenText: {
-    color: COLORS.secondary, // Updated to use secondary color
-  },
-  redText: {
-    color: COLORS.primary, // Updated to use primary color
   },
   scrollView: {
     flex: 1,

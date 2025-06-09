@@ -7,8 +7,10 @@
     "icon": "./assets/images/icon.png",
     "scheme": "gdwmscanning",
     "newArchEnabled": false,
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +19,8 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.jamesbishop51.gdwmscanning",
-      "permissions": ["android.permission.CAMERA"]
+      "permissions": ["android.permission.CAMERA"],
+      "userInterfaceStyle": "automatic"
     },
     "web": {
       "bundler": "metro",

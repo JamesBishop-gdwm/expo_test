@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/Button";
 import { useNavigation } from "@react-navigation/native";
 import { router } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { Button, Platform, StyleSheet, TextInput, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
 import NfcManager, { Ndef, NfcTech } from "react-native-nfc-manager";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -16,6 +17,31 @@ export default function TabTwoScreen() {
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [manualItemNumber, setManualItemNumber] = useState<string>("");
   const navigation = useNavigation();
+  // Fix: Change type from NodeJS.Timeout to number
+  const errorTimeoutRef = useRef<number | null>(null);
+
+  // Clear error after timeout
+  useEffect(() => {
+    // Clear any existing timeout
+    if (errorTimeoutRef.current !== null) {
+      clearTimeout(errorTimeoutRef.current);
+      errorTimeoutRef.current = null;
+    }
+
+    // Set a new timeout if there's an error
+    if (nfcError) {
+      errorTimeoutRef.current = setTimeout(() => {
+        setNfcError(null);
+      }, 5000);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (errorTimeoutRef.current !== null) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, [nfcError]);
 
   // Function to start NFC scanning
   const readNfcTag = useCallback(async () => {
@@ -137,31 +163,30 @@ export default function TabTwoScreen() {
   }, [isScanning]);
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-    >
-      <ThemedView style={styles.titleContainer}>
+    <ParallaxScrollView>
+      <ThemedView>
         <ThemedText type="title">Item History</ThemedText>
       </ThemedView>
 
       {/* Manual entry section */}
-      <Card>
-        <ThemedView style={styles.manualEntryContainer}>
-          <ThemedText type="defaultSemiBold" style={styles.manualEntryLabel}>
-            Manual Entry
-          </ThemedText>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter item number (e.g. DB-002801-1)"
-              value={manualItemNumber}
-              onChangeText={setManualItemNumber}
-              placeholderTextColor="#888"
-            />
-            <Button title="Go" onPress={handleManualSubmit} />
-          </View>
-        </ThemedView>
-      </Card>
+
+      <ThemedView style={styles.manualEntryContainer}>
+        <ThemedText type="defaultSemiBold" style={styles.manualEntryLabel}>
+          Manual Entry
+        </ThemedText>
+        <View style={styles.inputColumn}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter item number (e.g. DB-002801-1)"
+            value={manualItemNumber}
+            onChangeText={setManualItemNumber}
+            placeholderTextColor="#888"
+          />
+          <Button style={styles.submitButton} onPress={handleManualSubmit}>
+            Search
+          </Button>
+        </View>
+      </ThemedView>
 
       <Card style={styles.nfcCard}>
         <ThemedText style={[styles.statusText, styles.scannerHeader]}>
@@ -181,10 +206,8 @@ export default function TabTwoScreen() {
 
         {isScanning ? (
           <>
-            <ThemedText style={styles.scanningText}>
-              Hold your device near an NFC tag...
-            </ThemedText>
-            <Button title="Cancel" onPress={stopNfcScan} color="#FF6B00" />
+            <ThemedText>Hold your device near an NFC tag...</ThemedText>
+            <Button onPress={stopNfcScan}>Cancel</Button>
           </>
         ) : (
           <>
@@ -199,11 +222,7 @@ export default function TabTwoScreen() {
                 <ThemedText style={styles.inactiveText}>
                   Tap the button below to scan an NFC tag
                 </ThemedText>
-                <Button
-                  title="Start NFC Scan"
-                  onPress={readNfcTag}
-                  color="#224f4a"
-                />
+                <Button onPress={readNfcTag}>Start NFC Scan</Button>
               </>
             )}
           </>
@@ -286,15 +305,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  inputColumn: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
+    marginTop: 8,
+  },
   input: {
-    flex: 1,
+    width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 4,
-    padding: 8,
-    marginRight: 8,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
     backgroundColor: "#fff",
     color: "#000",
+    fontSize: 16,
+  },
+  submitButton: {
+    height: 50,
+    backgroundColor: "#224f4a",
+    borderRadius: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   scannerHeader: {
     fontSize: 18,

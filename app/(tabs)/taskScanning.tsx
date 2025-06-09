@@ -46,9 +46,7 @@ export default function TaskScanningScreen() {
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-    >
+    <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Task Scanning</ThemedText>
       </ThemedView>

@@ -7,28 +7,41 @@ import {
   TouchableOpacityProps,
 } from "react-native";
 
+import { COLORS } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+
 interface ButtonProps extends TouchableOpacityProps {
-  variant?: "primary" | "secondary" | "outline";
+  outline?: boolean;
   loading?: boolean;
 }
 
 export function Button({
   children,
   style,
-  variant = "primary",
+  outline = false,
   loading = false,
   disabled = false,
   ...props
 }: ButtonProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const isDark = colorScheme === "dark";
+
+  // Theme-based colors
+  const backgroundColor = isDark ? COLORS.secondary : COLORS.primary;
+
   return (
     <TouchableOpacity
       style={[
         styles.button,
-        variant === "primary"
-          ? styles.primary
-          : variant === "secondary"
-          ? styles.secondary
-          : styles.outline,
+        outline
+          ? {
+              backgroundColor: "transparent",
+              borderWidth: 1,
+              borderColor: backgroundColor,
+            }
+          : {
+              backgroundColor: backgroundColor,
+            },
         disabled && styles.disabled,
         style,
       ]}
@@ -37,13 +50,13 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === "outline" ? "#781f19" : "#f6f6f6"}
+          color={outline ? backgroundColor : COLORS.offWhite}
         />
       ) : (
         <Text
           style={[
             styles.text,
-            variant === "outline" ? styles.outlineText : styles.buttonText,
+            outline ? { color: backgroundColor } : { color: COLORS.offWhite },
             disabled && styles.disabledText,
           ]}
         >
@@ -63,26 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
   },
-  primary: {
-    backgroundColor: "#781f19", // Primary color
-  },
-  secondary: {
-    backgroundColor: "#224f4a", // Secondary color
-  },
-  outline: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#781f19", // Primary color
-  },
   text: {
     fontSize: 16,
     fontWeight: "500",
-  },
-  buttonText: {
-    color: "#f6f6f6", // offWhite
-  },
-  outlineText: {
-    color: "#781f19", // Primary color
   },
   disabled: {
     opacity: 0.6,

@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { useOperatorStore } from "@/store/useOperatorStore";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 export default function TaskScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -15,10 +15,25 @@ export default function TaskScreen() {
 
   // Function to handle back navigation with logout
   const handleBackPress = async () => {
-    // Log out the user first
-    await store.logOut();
-    // Then navigate back to the task scanning screen
-    router.replace("/(tabs)/taskScanning");
+    Alert.alert(
+      "Confirm Navigation",
+      "Going back will log you out. Are you sure you want to continue?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes, Go Back",
+          onPress: async () => {
+            // Log out the user first
+            await store.logOut();
+            // Then navigate back to the task scanning screen
+            router.replace("/(tabs)/taskScanning");
+          },
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -36,18 +51,25 @@ export default function TaskScreen() {
   };
 
   const handleLogout = async () => {
-    await store.logOut();
-    router.replace("/(tabs)/taskScanning");
+    Alert.alert("Confirm Logout", "Are you sure you want to change user?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Yes, Change User",
+        onPress: async () => {
+          await store.logOut();
+          router.replace("/(tabs)/taskScanning");
+        },
+      },
+    ]);
   };
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-        showBackButton={true}
-        onBackPress={handleBackPress}
-      >
+      <ParallaxScrollView showBackButton={true} onBackPress={handleBackPress}>
         <ThemedView style={styles.container}>
           <Card style={styles.card}>
             {store.currentUser && (
@@ -68,7 +90,6 @@ export default function TaskScreen() {
               <Button
                 onPress={handleLogout}
                 style={[styles.button, styles.logoutButton]}
-                variant="outline"
               >
                 Change User
               </Button>

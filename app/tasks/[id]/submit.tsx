@@ -51,7 +51,6 @@ export default function SubmitScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <ParallaxScrollView
-        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
         showBackButton={true}
         backRoute={`/tasks/${id}/scan-barcode`}
       >

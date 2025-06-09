@@ -103,7 +103,6 @@ export default function ItemDetailsScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <ParallaxScrollView
-          headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
           showBackButton={true}
           backRoute="/(tabs)/itemHistory"
         >
@@ -122,7 +121,6 @@ export default function ItemDetailsScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <ParallaxScrollView
-          headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
           showBackButton={true}
           backRoute="/(tabs)/itemHistory"
         >
@@ -149,11 +147,7 @@ export default function ItemDetailsScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-        showBackButton={true}
-        backRoute="/(tabs)/itemHistory"
-      >
+      <ParallaxScrollView showBackButton={true} backRoute="/(tabs)/itemHistory">
         <ThemedView style={styles.container}>
           <ThemedText type="title">Item {itemNumber}</ThemedText>
 

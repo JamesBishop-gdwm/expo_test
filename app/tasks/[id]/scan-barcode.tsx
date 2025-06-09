@@ -218,11 +218,7 @@ export default function ScanBarcodeScreen() {
             }}
           />
           <View style={styles.scannerOverlay}>
-            <Button
-              onPress={stopBarcodeScanner}
-              variant="secondary"
-              style={styles.cancelButton}
-            >
+            <Button onPress={stopBarcodeScanner} style={styles.cancelButton}>
               Cancel Scan
             </Button>
           </View>
@@ -235,11 +231,7 @@ export default function ScanBarcodeScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-        showBackButton={true}
-        backRoute={`/tasks/${id}`}
-      >
+      <ParallaxScrollView showBackButton={true} backRoute={`/tasks/${id}`}>
         <ThemedView style={styles.container}>
           <Card>
             <ThemedText type="title" style={styles.cardTitle}>
@@ -258,7 +250,6 @@ export default function ScanBarcodeScreen() {
                 <Button
                   onPress={startNfcScan}
                   style={styles.scanButton}
-                  variant="secondary"
                   disabled={nfcScanning}
                 >
                   {nfcScanning ? "Scanning NFC..." : "Scan NFC Tag"}
@@ -271,11 +262,7 @@ export default function ScanBarcodeScreen() {
                 <ThemedText style={styles.scanningText}>
                   Hold your device near an NFC tag...
                 </ThemedText>
-                <Button
-                  onPress={stopNfcScan}
-                  variant="outline"
-                  style={styles.cancelNfcButton}
-                >
+                <Button onPress={stopNfcScan} style={styles.cancelNfcButton}>
                   Cancel NFC Scan
                 </Button>
               </ThemedView>
