@@ -1,7 +1,12 @@
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import type { PropsWithChildren } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  RefreshControlProps, // This import is key
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -18,11 +23,13 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 
 const HEADER_HEIGHT = 60
 
+// The Props type now includes the optional refreshControl
 type Props = PropsWithChildren<{
   headerBackgroundColor?: { dark: string; light: string }
   showBackButton?: boolean
   backRoute?: any
   onBackPress?: () => void
+  refreshControl?: React.ReactElement<RefreshControlProps>
 }>
 
 export default function ParallaxScrollView({
@@ -34,6 +41,7 @@ export default function ParallaxScrollView({
   showBackButton = false,
   backRoute,
   onBackPress,
+  refreshControl, // It accepts the prop here...
 }: Props) {
   const colorScheme = useColorScheme() ?? 'light'
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
@@ -54,27 +62,20 @@ export default function ParallaxScrollView({
     }
   })
 
-  // Handle back navigation with explicit route or callback
   const handleBackNavigation = () => {
-    // If a custom callback is provided, use it
     if (onBackPress) {
       onBackPress()
       return
     }
-
-    // Otherwise fall back to route-based navigation
     if (backRoute) {
       try {
-        // Try different navigation approaches depending on route type
         router.push(backRoute as any)
       } catch (e) {
-        // Fallback to replace if push fails
         try {
           router.replace(backRoute as any)
         } catch (e) {}
       }
     } else {
-      // If no back route specified, try normal back navigation
       try {
         router.back()
       } catch (e) {}
@@ -83,7 +84,6 @@ export default function ParallaxScrollView({
 
   return (
     <ThemedView style={styles.container}>
-      {/* Status bar area */}
       <View
         style={[
           styles.statusBar,
@@ -99,7 +99,7 @@ export default function ParallaxScrollView({
           styles.header,
           {
             backgroundColor: headerBackgroundColor[colorScheme],
-            top: topInset, // Position header below the status bar
+            top: topInset,
           },
           headerAnimatedStyle,
         ]}
@@ -137,9 +137,11 @@ export default function ParallaxScrollView({
         style={styles.scrollView}
         contentContainerStyle={{
           paddingBottom: bottom,
-          paddingTop: HEADER_HEIGHT + topInset, // Add topInset to padding
+          paddingTop: HEADER_HEIGHT + topInset,
           ...styles.contentContainer,
         }}
+        // ...and passes it directly to the ScrollView here.
+        refreshControl={refreshControl}
       >
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>

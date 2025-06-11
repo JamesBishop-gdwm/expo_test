@@ -63,7 +63,6 @@ export default function TabTwoScreen() {
         if (supported) {
           // Start the NFC manager
           await NfcManager.start()
-          console.log('NFC manager started successfully')
         } else {
           setNfcError('NFC is not supported on this device.')
         }
@@ -71,7 +70,6 @@ export default function TabTwoScreen() {
         if (!isMountedRef.current) return
         setIsSupported(false)
         setNfcError('Error checking NFC support: ' + e.message)
-        console.error('NFC init error:', e)
       }
     }
 
@@ -79,7 +77,6 @@ export default function TabTwoScreen() {
 
     // Cleanup function
     return () => {
-      console.log('Cleaning up NFC')
       isMountedRef.current = false
 
       if (errorTimeoutRef.current !== null) {
@@ -121,7 +118,6 @@ export default function TabTwoScreen() {
               const itemNumberMatch = text.match(/itemNumber=([^&\s]+)/)
               if (itemNumberMatch && itemNumberMatch[1]) {
                 const itemNumber = itemNumberMatch[1]
-                console.log('Extracted itemNumber from text:', itemNumber)
 
                 router.push({
                   pathname: '/itemDetails',
@@ -141,25 +137,18 @@ export default function TabTwoScreen() {
                 const itemNumber = url.searchParams.get('itemNumber')
 
                 if (itemNumber) {
-                  console.log(
-                    'Extracted itemNumber from fixed URL:',
-                    itemNumber
-                  )
                   router.push({
                     pathname: '/itemDetails',
                     params: { itemNumber },
                   })
                   return
                 }
-              } catch (urlError) {
-                console.log('Error parsing URL from NFC content:', urlError)
-              }
+              } catch (urlError) {}
             }
 
             // If not a URL, check if it's a direct item number format (e.g., DB-123456-1)
             else if (/^[A-Z]{2}-\d+-\d+$/.test(text.trim())) {
               const itemNumber = text.trim()
-              console.log('Direct item number format found:', itemNumber)
               router.push({
                 pathname: '/itemDetails',
                 params: { itemNumber },
@@ -169,7 +158,6 @@ export default function TabTwoScreen() {
             // Check if it's just a numeric ID
             else if (/^\d+$/.test(text.trim())) {
               const itemNumber = text.trim()
-              console.log('Numeric item ID found:', itemNumber)
               router.push({
                 pathname: '/itemDetails',
                 params: { itemNumber },
@@ -181,7 +169,6 @@ export default function TabTwoScreen() {
             const directItemFormat = text.match(/([A-Z]{2}-\d+-\d+)/)
             if (directItemFormat) {
               const itemNumber = directItemFormat[1]
-              console.log('Item number pattern found in text:', itemNumber)
               router.push({
                 pathname: '/itemDetails',
                 params: { itemNumber },
@@ -191,7 +178,6 @@ export default function TabTwoScreen() {
 
             setNfcError('No valid item number found in NFC tag.')
           } catch (parseError) {
-            console.error('Error parsing NFC content:', parseError)
             setNfcError('Invalid format in NFC tag.')
           }
         } else {

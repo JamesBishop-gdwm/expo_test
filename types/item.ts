@@ -207,3 +207,22 @@ export type ItemData = {
   // Additional field for simple design
   design?: string | null // For backwards compatibility
 }
+
+export interface GlassUnit {
+  Id: number
+  ItemId: number
+  StockCode: string
+  Description: string
+  Quantity: number
+  Width: number | null
+  Height: number | null
+  ForDropDown: boolean
+  SubAssembly: string
+  Price: number | null
+  WinSysStockCategoryId: number | null
+  UsageDescription: string | null
+  AnalysisCode: string | null
+  AxBomLevel: number | null
+  CostCentre: string | null
+  AxStockCode: string | null
+}

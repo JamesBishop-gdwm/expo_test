@@ -19,6 +19,10 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: COLORS.primary,
+    border: 'rgba(0,0,0,0.1)',
+    tableHeader: 'rgba(0,0,0,0.08)',
+    tableRow: 'rgba(0,0,0,0.02)',
+    rowBorder: 'rgba(0,0,0,0.05)',
   },
   dark: {
     text: COLORS.textDark,
@@ -29,5 +33,9 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: COLORS.gold,
+    border: 'rgba(255,255,255,0.1)',
+    tableHeader: 'rgba(255,255,255,0.08)',
+    tableRow: 'rgba(255,255,255,0.02)',
+    rowBorder: 'rgba(255,255,255,0.05)',
   },
 }
